@@ -20,6 +20,9 @@ export default function App() {
   const [errorRed, setErrorRed] = useState(false);
   const { connection } = useConnection();
   useEffect(() => {
+    document.title = TITULO_APP;
+  }, []);
+  useEffect(() => {
     let activo = true;
     comprobarDevnet(connection).then(() => { if (activo) { setRed('Devnet verificada'); setErrorRed(false); } }).catch((error) => {
       if (!activo) return;
@@ -33,7 +36,7 @@ export default function App() {
   return <div className="app-layout">
     <aside className="sidebar">
       <a className="brand" href="#" onClick={(e) => e.preventDefault()} aria-label="Pablo Guzmán Sánchez">
-        <img className="brand-avatar" src={avatarPablo} alt="" width={44} height={44} />
+        <img className="brand-avatar" src={avatarPablo} alt="Retrato de Pablo Guzmán Sánchez" width={44} height={44} />
         <span className="brand-text">
           <span className="brand-name">Pablo Guzmán Sánchez</span>
           <span className="brand-caption">Registro de ventas en Solana</span>
@@ -44,7 +47,7 @@ export default function App() {
         <button className={vista === 'conexion' ? 'nav-item selected' : 'nav-item'} disabled={ocupado} onClick={() => setVista('conexion')}><Icono tipo="conexion" /> Conexión</button>
         <button className={vista === 'registro' ? 'nav-item selected' : 'nav-item'} disabled={ocupado || soloDia3} onClick={() => setVista('registro')}><Icono tipo="registro" /> Registro de ventas{soloDia3 && <small>Día 4</small>}</button>
       </nav>
-      <div className="sidebar-bottom"><p>Aprende construyendo.</p><span>Datos de práctica · Solana Devnet</span><a href="https://github.com/WayLearnLatam" target="_blank" rel="noreferrer">Comunidad WayLearn</a><a href="https://waylearn.gitbook.io/solana-engineering-track-advanced" target="_blank" rel="noreferrer">GitBook del curso</a></div>
+      <div className="sidebar-bottom"><p>Registro de ventas · Devnet</p><span>Datos de práctica · Solana</span></div>
     </aside>
     <div className="main-area">
       <header className="topbar"><div><span className="topbar-title">{TITULO_APP}</span><span className={errorRed ? 'network-badge warning' : 'network-badge'}>{red}</span></div><WalletMultiButton>{publicKey ? publicKey.toBase58().slice(0, 4) + '…' + publicKey.toBase58().slice(-4) : 'Conectar wallet'}</WalletMultiButton></header>

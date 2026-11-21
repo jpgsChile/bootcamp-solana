@@ -28,6 +28,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .sidebar-bottom p { font-weight: 600; color: #ded5e5; }
 .sidebar-bottom span { display: block; color: #8d8499; font-size: 10px; line-height: 1.7; }
 .sidebar-bottom a { display: inline-block; color: #c9b8d4; font-size: 11px; margin-top: 12px; margin-right: 14px; }
+.sidebar-bottom p { margin: 0 0 6px; }
 .main-area { margin-left: 248px; flex: 1; min-width: 0; }
 .topbar { min-height: 88px; border-bottom: 1px solid var(--border); background: #fffefc; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .topbar > div:first-child { display: flex; align-items: center; gap: 17px; flex-wrap: wrap; }

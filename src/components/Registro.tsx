@@ -127,7 +127,7 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
     {programa.esReferencia && <aside className="notice information"><strong>Configura tu programa para comenzar.</strong><p>La aplicación incluye un IDL de referencia. Importa el exportado de tu despliegue para consultar el negocio y realizar operaciones. Las lecturas de saldo ya están disponibles en Conexión.</p></aside>}
     <section className="panel lookup-panel">
       <div className="panel-heading"><h3>Localizar el negocio</h3><span className="small-note">Lectura sin firma</span></div>
-      <div className="lookup-fields"><label>Nombre exacto del negocio<input value={negocio} disabled={ocupado} onChange={(e) => setNegocio(e.target.value)} placeholder="Cafe WayLearn D1" /></label>
+      <div className="lookup-fields"><label>Nombre exacto del negocio<input value={negocio} disabled={ocupado} onChange={(e) => setNegocio(e.target.value)} placeholder="Café Demo" /></label>
       <label>Dirección de la autoridad<input value={autoridad} disabled={ocupado} onChange={(e) => setAutoridad(e.target.value)} placeholder="Conecta tu wallet o pega una dirección pública" spellCheck={false} autoComplete="off" /></label>
       <button className="button secondary" disabled={leyendo || ocupado || programa.esReferencia || !negocio.trim() || !autoridad.trim()} onClick={() => void cargar().catch(() => {})}>{leyendo ? 'Consultando…' : 'Consultar registro'}</button></div>
       <p className="help">El nombre y la autoridad determinan la dirección del registro. Puedes consultar otra autoridad en modo lectura.</p>

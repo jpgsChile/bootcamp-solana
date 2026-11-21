@@ -1,4 +1,4 @@
-// Tres cambios pequeños para familiarizarte con el proyecto.
-export const TITULO_APP = 'Registro de ventas';
-export const NEGOCIO_INICIAL = 'Cafe WayLearn D1';
+// Tres cambios pequeños para personalizar la interfaz.
+export const TITULO_APP = 'Registro de ventas · Pablo Guzmán';
+export const NEGOCIO_INICIAL = 'Café Demo';
 export const UNIDAD_MONTO = 'unidades';
