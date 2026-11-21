@@ -158,6 +158,7 @@ Para tu primera prueba, crea un negocio, agrega un cliente, registra una venta y
 | No aparece tu negocio | Comprueba el nombre exacto y la dirección de su autoridad; ambos participan en la PDA. |
 | No puedes repetir un SKU | Cada cliente solo puede tener una venta activa con ese SKU. |
 | El RPC responde con un límite de uso | Espera y vuelve a intentar, o configura otro endpoint de Devnet en `.env.local` siguiendo `.env.example`. |
+| Aparece «Revisa la conexión RPC» | El frontend y Wallet Adapter usan el mismo `ENDPOINT` (`VITE_SOLANA_RPC_URL` o `https://api.devnet.solana.com`). El aviso sale si `getGenesisHash` falla (red o 429). Crea `.env.local` con un RPC de Devnet alternativo, reinicia `npm run dev` y comprueba que Solflare también esté en Devnet. |
 | Cambiaste el IDL y falla la comprobación | Ejecuta `npm run cliente` y reinicia el servidor. |
 
 ## Cómo probar el flujo de registro de ventas
