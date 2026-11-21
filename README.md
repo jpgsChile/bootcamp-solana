@@ -170,6 +170,18 @@ Para tu primera prueba, crea un negocio, agrega un cliente, registra una venta y
 
 **No se despliega el programa ni se envían transacciones a mainnet desde este material.**
 
+### Filtro y exportación CSV de ventas activas
+
+Con un registro ya cargado (consulta on-chain o, en desarrollo, **Cargar datos de demostración**):
+
+1. Usa el campo **Buscar ventas activas** para filtrar por SKU o descripción (sin distinguir mayúsculas). El filtrado es local: no añade consultas RPC.
+2. La tabla sigue agrupada por cliente; al hacer clic en una fila se rellenan ID/SKU/importe para **Corregir importe**.
+3. El contador indica cuántas ventas coinciden; si no hay resultados verás un estado vacío explícito.
+4. **Exportar CSV** descarga las filas visibles (`id_cliente`, `nombre_cliente`, `sku`, `descripcion`, `importe`). Con la búsqueda vacía exporta todas las ventas activas cargadas; el botón se deshabilita si no hay filas.
+5. Los campos de texto del CSV escapan comillas y saltos de línea, y neutralizan valores que una hoja de cálculo podría tratar como fórmula.
+
+El botón de demostración solo aparece con `npm run dev`. Muestra el aviso **Datos de demostración**, no habilita escrituras y no simula confirmaciones de Solana.
+
 ## Recursos y comunidad
 
 - Material original: [WayLearnLatam/Registro-Ventas-Solana-App](https://github.com/WayLearnLatam/Registro-Ventas-Solana-App).

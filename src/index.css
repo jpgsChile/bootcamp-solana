@@ -94,6 +94,13 @@ summary { cursor: pointer; }
 .customer header strong { font-size: 13px; display: block; margin-bottom: 6px; }
 .text-button { border: none; padding: 7px 0 7px 10px; background: none; color: var(--accent); font-size: 10px; }
 .empty-line { font-size: 11px; color: #a09aa5; line-height: 1.8; padding: 12px 0; }
+.demo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 12px; }
+.demo-actions .help { margin: 0; }
+.sales-toolbar { display: grid; grid-template-columns: minmax(0, 1.4fr) auto; gap: 14px; align-items: end; margin-bottom: 8px; }
+.sales-search { margin: 0; }
+.sales-search input { margin-bottom: 0; }
+.sales-toolbar-meta { display: flex; align-items: center; gap: 10px; justify-content: flex-end; padding-bottom: 2px; }
+.empty-state.compact { min-height: 140px; margin: 12px 0 4px; border: 1px dashed #e8e1e7; border-radius: 8px; background: #fcfbfc; }
 .table-wrap { overflow: auto; }
 table { width: 100%; border-collapse: collapse; margin: 17px 0 12px; font-size: 11px; }
 th { font-size: 9px; text-transform: uppercase; letter-spacing: .7px; color: #9a919d; font-weight: 500; text-align: left; padding: 9px 7px; border-bottom: 1px solid #ece8ed; }
@@ -113,5 +120,5 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .app-footer details { text-align: right; max-width: 350px; }
 .app-footer code { font-size: 9px; margin-top: 9px; }
 @media (min-width: 1600px) { main { padding-top: 48px; } }
-@media (max-width: 1120px) { .sidebar { width: 206px; padding-left: 14px; padding-right: 14px; } .main-area { margin-left: 206px; } main { padding: 30px 25px; } .topbar { padding: 19px 25px; } .workspace-grid { grid-template-columns: 1fr; } .lookup-fields { grid-template-columns: 1fr 1fr; } .lookup-fields .button { margin-top: 0; grid-column: 1 / -1; justify-self: start; } .brand { font-size: 20px; gap: 7px; } .brand-caption { font-size: 7px; } }
+@media (max-width: 1120px) { .sidebar { width: 206px; padding-left: 14px; padding-right: 14px; } .main-area { margin-left: 206px; } main { padding: 30px 25px; } .topbar { padding: 19px 25px; } .workspace-grid { grid-template-columns: 1fr; } .lookup-fields { grid-template-columns: 1fr 1fr; } .lookup-fields .button { margin-top: 0; grid-column: 1 / -1; justify-self: start; } .sales-toolbar { grid-template-columns: 1fr; } .sales-toolbar-meta { justify-content: flex-start; } .brand { font-size: 20px; gap: 7px; } .brand-caption { font-size: 7px; } }
 @media (max-width: 720px) { .app-layout { display: block; } .sidebar { position: static; width: 100%; padding: 19px 20px 11px; } .brand { font-size: 22px; } .sidebar-label, .sidebar-bottom { display: none; } .sidebar nav { display: flex; gap: 8px; margin-top: 20px; } .nav-item { width: auto; margin: 0; padding: 11px 13px; font-size: 11px; } .main-area { margin-left: 0; } .topbar { padding: 15px 20px; min-height: 72px; } .topbar-title { display: none; } main { padding: 28px 18px; } .section-heading { align-items: start; } .section-heading .tag { display: none; } .two-columns, .lookup-fields { grid-template-columns: 1fr; } .panel { padding: 21px; } .lookup-fields { gap: 0; } .lookup-fields .button { margin-top: 0; } .app-footer { flex-wrap: wrap; } .app-footer details { text-align: left; } }
