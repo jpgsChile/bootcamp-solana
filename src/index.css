@@ -12,11 +12,13 @@ a:hover { text-decoration: underline; }
 button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #edb17c; outline-offset: 3px; }
 .app-layout { display: flex; min-height: 100vh; }
 .sidebar { width: 248px; background: #1c1825; color: #f9f5fa; padding: 34px 20px 26px; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; inset: 0 auto 0 0; }
-.brand { display: flex; align-items: center; gap: 11px; color: white; font-size: 23px; font-weight: 750; letter-spacing: -.9px; padding: 0 8px; }
+.brand { display: flex; align-items: center; gap: 12px; color: white; padding: 0 6px; text-decoration: none; min-width: 0; }
 .brand:hover { text-decoration: none; }
-.brand-mark { display: grid; place-items: center; width: 37px; height: 39px; color: #ff9d77; font-size: 29px; transform: skew(-9deg); }
-.brand-caption { display: block; color: #a39ba9; font-size: 8px; letter-spacing: 1.1px; margin-top: 4px; font-weight: 500; }
-.sidebar-label { color: #81788c; font-size: 10px; letter-spacing: 1.4px; font-weight: 650; margin: 57px 14px 18px; }
+.brand-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #2a2433; border: 1px solid #3d3548; }
+.brand-text { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.brand-name { display: block; color: #fff; font-size: 14px; font-weight: 700; letter-spacing: -.35px; line-height: 1.25; overflow-wrap: anywhere; }
+.brand-caption { display: block; color: #a39ba9; font-size: 9px; letter-spacing: .2px; font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; }
+.sidebar-label { color: #81788c; font-size: 10px; letter-spacing: 1.4px; font-weight: 650; margin: 40px 14px 18px; }
 .nav-item { width: 100%; border: 0; border-radius: 8px; text-align: left; background: transparent; color: #bfb7c9; padding: 15px 13px; margin-bottom: 8px; font-size: 13px; display: flex; align-items: center; gap: 12px; }
 .nav-item span { font-size: 20px; line-height: 1; width: 20px; }
 .nav-item.selected { background: #352731; color: #ffa17c; }
@@ -25,7 +27,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .sidebar-bottom { margin-top: auto; padding: 28px 13px 0; font-size: 12px; }
 .sidebar-bottom p { font-weight: 600; color: #ded5e5; }
 .sidebar-bottom span { display: block; color: #8d8499; font-size: 10px; line-height: 1.7; }
-.sidebar-bottom a { display: inline-block; color: #c9b8d4; font-size: 11px; margin-top: 20px; }
+.sidebar-bottom a { display: inline-block; color: #c9b8d4; font-size: 11px; margin-top: 12px; margin-right: 14px; }
 .main-area { margin-left: 248px; flex: 1; min-width: 0; }
 .topbar { min-height: 88px; border-bottom: 1px solid var(--border); background: #fffefc; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .topbar > div:first-child { display: flex; align-items: center; gap: 17px; flex-wrap: wrap; }
@@ -120,5 +122,5 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .app-footer details { text-align: right; max-width: 350px; }
 .app-footer code { font-size: 9px; margin-top: 9px; }
 @media (min-width: 1600px) { main { padding-top: 48px; } }
-@media (max-width: 1120px) { .sidebar { width: 206px; padding-left: 14px; padding-right: 14px; } .main-area { margin-left: 206px; } main { padding: 30px 25px; } .topbar { padding: 19px 25px; } .workspace-grid { grid-template-columns: 1fr; } .lookup-fields { grid-template-columns: 1fr 1fr; } .lookup-fields .button { margin-top: 0; grid-column: 1 / -1; justify-self: start; } .sales-toolbar { grid-template-columns: 1fr; } .sales-toolbar-meta { justify-content: flex-start; } .brand { font-size: 20px; gap: 7px; } .brand-caption { font-size: 7px; } }
-@media (max-width: 720px) { .app-layout { display: block; } .sidebar { position: static; width: 100%; padding: 19px 20px 11px; } .brand { font-size: 22px; } .sidebar-label, .sidebar-bottom { display: none; } .sidebar nav { display: flex; gap: 8px; margin-top: 20px; } .nav-item { width: auto; margin: 0; padding: 11px 13px; font-size: 11px; } .main-area { margin-left: 0; } .topbar { padding: 15px 20px; min-height: 72px; } .topbar-title { display: none; } main { padding: 28px 18px; } .section-heading { align-items: start; } .section-heading .tag { display: none; } .two-columns, .lookup-fields { grid-template-columns: 1fr; } .panel { padding: 21px; } .lookup-fields { gap: 0; } .lookup-fields .button { margin-top: 0; } .app-footer { flex-wrap: wrap; } .app-footer details { text-align: left; } }
+@media (max-width: 1120px) { .sidebar { width: 206px; padding-left: 14px; padding-right: 14px; } .main-area { margin-left: 206px; } main { padding: 30px 25px; } .topbar { padding: 19px 25px; } .workspace-grid { grid-template-columns: 1fr; } .lookup-fields { grid-template-columns: 1fr 1fr; } .lookup-fields .button { margin-top: 0; grid-column: 1 / -1; justify-self: start; } .sales-toolbar { grid-template-columns: 1fr; } .sales-toolbar-meta { justify-content: flex-start; } .brand { gap: 10px; } .brand-avatar { width: 40px; height: 40px; } .brand-name { font-size: 13px; } .brand-caption { font-size: 8px; } }
+@media (max-width: 720px) { .app-layout { display: block; } .sidebar { position: static; width: 100%; padding: 19px 20px 11px; } .brand { align-items: center; max-width: 100%; } .brand-avatar { width: 42px; height: 42px; } .brand-name { font-size: 15px; } .brand-caption { font-size: 9px; } .sidebar-label, .sidebar-bottom { display: none; } .sidebar nav { display: flex; gap: 8px; margin-top: 20px; } .nav-item { width: auto; margin: 0; padding: 11px 13px; font-size: 11px; } .main-area { margin-left: 0; } .topbar { padding: 15px 20px; min-height: 72px; } .topbar-title { display: none; } main { padding: 28px 18px; } .section-heading { align-items: start; } .section-heading .tag { display: none; } .two-columns, .lookup-fields { grid-template-columns: 1fr; } .panel { padding: 21px; } .lookup-fields { gap: 0; } .lookup-fields .button { margin-top: 0; } .app-footer { flex-wrap: wrap; } .app-footer details { text-align: left; } }
