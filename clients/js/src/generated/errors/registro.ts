@@ -19,15 +19,48 @@ import { REGISTRO_PROGRAM_ADDRESS } from "../programs";
 export const REGISTRO_ERROR__NO_OWNER = 0x1770; // 6000
 /** NoSKU: Error, la venta no esta en el historial del cliente */
 export const REGISTRO_ERROR__NO_S_K_U = 0x1771; // 6001
+/** NombreNegocioInvalido: Nombre de negocio vacio o mayor a 30 bytes UTF-8 */
+export const REGISTRO_ERROR__NOMBRE_NEGOCIO_INVALIDO = 0x1772; // 6002
+/** NombreClienteInvalido: Nombre de cliente vacio o mayor a 30 bytes UTF-8 */
+export const REGISTRO_ERROR__NOMBRE_CLIENTE_INVALIDO = 0x1773; // 6003
+/** SkuInvalido: SKU vacio o mayor a 5 bytes UTF-8 */
+export const REGISTRO_ERROR__SKU_INVALIDO = 0x1774; // 6004
+/** DescripcionInvalida: Descripcion vacia o mayor a 50 bytes UTF-8 */
+export const REGISTRO_ERROR__DESCRIPCION_INVALIDA = 0x1775; // 6005
+/** MontoInvalido: El monto debe ser un entero positivo */
+export const REGISTRO_ERROR__MONTO_INVALIDO = 0x1776; // 6006
+/** CapacidadClientes: El registro alcanzo el maximo de 10 clientes */
+export const REGISTRO_ERROR__CAPACIDAD_CLIENTES = 0x1777; // 6007
+/** CapacidadVentas: El cliente alcanzo el maximo de 10 ventas activas */
+export const REGISTRO_ERROR__CAPACIDAD_VENTAS = 0x1778; // 6008
+/** DesbordamientoContador: Desbordamiento del contador u16 */
+export const REGISTRO_ERROR__DESBORDAMIENTO_CONTADOR = 0x1779; // 6009
 
 export type RegistroError =
-  typeof REGISTRO_ERROR__NO_OWNER | typeof REGISTRO_ERROR__NO_S_K_U;
+  | typeof REGISTRO_ERROR__CAPACIDAD_CLIENTES
+  | typeof REGISTRO_ERROR__CAPACIDAD_VENTAS
+  | typeof REGISTRO_ERROR__DESBORDAMIENTO_CONTADOR
+  | typeof REGISTRO_ERROR__DESCRIPCION_INVALIDA
+  | typeof REGISTRO_ERROR__MONTO_INVALIDO
+  | typeof REGISTRO_ERROR__NOMBRE_CLIENTE_INVALIDO
+  | typeof REGISTRO_ERROR__NOMBRE_NEGOCIO_INVALIDO
+  | typeof REGISTRO_ERROR__NO_OWNER
+  | typeof REGISTRO_ERROR__NO_S_K_U
+  | typeof REGISTRO_ERROR__SKU_INVALIDO;
 
 let registroErrorMessages: Record<RegistroError, string> | undefined;
 if (process.env["NODE_ENV"] !== "production") {
   registroErrorMessages = {
+    [REGISTRO_ERROR__CAPACIDAD_CLIENTES]: `El registro alcanzo el maximo de 10 clientes`,
+    [REGISTRO_ERROR__CAPACIDAD_VENTAS]: `El cliente alcanzo el maximo de 10 ventas activas`,
+    [REGISTRO_ERROR__DESBORDAMIENTO_CONTADOR]: `Desbordamiento del contador u16`,
+    [REGISTRO_ERROR__DESCRIPCION_INVALIDA]: `Descripcion vacia o mayor a 50 bytes UTF-8`,
+    [REGISTRO_ERROR__MONTO_INVALIDO]: `El monto debe ser un entero positivo`,
+    [REGISTRO_ERROR__NOMBRE_CLIENTE_INVALIDO]: `Nombre de cliente vacio o mayor a 30 bytes UTF-8`,
+    [REGISTRO_ERROR__NOMBRE_NEGOCIO_INVALIDO]: `Nombre de negocio vacio o mayor a 30 bytes UTF-8`,
     [REGISTRO_ERROR__NO_OWNER]: `Error, no eres el owner del registro`,
     [REGISTRO_ERROR__NO_S_K_U]: `Error, la venta no esta en el historial del cliente`,
+    [REGISTRO_ERROR__SKU_INVALIDO]: `SKU vacio o mayor a 5 bytes UTF-8`,
   };
 }
 
