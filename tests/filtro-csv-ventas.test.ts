@@ -78,6 +78,6 @@ test('el CSV escapa comillas y saltos de línea y neutraliza fórmulas', () => {
   assert.equal(contarVentasActivas(DEMO_REGISTRO.clientes), 4);
   assert.match(completo, /,50\r\n/);
   assert.match(completo, /,35\r\n/);
-  assert.match(completo, /,60\r\n/);
+  assert.match(completo, /,65\r\n/);
   assert.match(completo, /,25\r\n/);
 });

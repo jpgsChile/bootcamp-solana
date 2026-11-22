@@ -35,10 +35,10 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
   const [errorLectura, setErrorLectura] = useState('');
   const [op, setOp] = useState<Operacion>('registro');
   const [nombre, setNombre] = useState('Ana');
-  const [idCliente, setIdCliente] = useState('1');
-  const [sku, setSku] = useState('CAF01');
-  const [descripcion, setDescripcion] = useState('Cafe americano');
-  const [monto, setMonto] = useState('50');
+  const [idCliente, setIdCliente] = useState('');
+  const [sku, setSku] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [monto, setMonto] = useState('');
   const [ocupado, setOcupado] = useState(false);
   const [fase, setFase] = useState('');
   const [firma, setFirma] = useState('');
@@ -56,6 +56,7 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
     setDatosDemo(false); setBusqueda('');
     // No conservar selección de cliente al cambiar negocio, autoridad o wallet.
     setIdCliente(''); setNombre('');
+    setSku(''); setDescripcion(''); setMonto('');
   }, [negocio, autoridad]);
   useEffect(() => { onOcupado(ocupado); return () => onOcupado(false); }, [ocupado, onOcupado]);
   useEffect(() => {
@@ -108,6 +109,34 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
     if (ventasVisibles.length === 0) return;
     const stamp = new Date().toISOString().slice(0, 10);
     descargarCsv(`ventas-activas-${stamp}.csv`, construirCsvVentas(ventasVisibles));
+  }
+
+  function limpiarCamposVenta() {
+    setSku('');
+    setDescripcion('');
+    setMonto('');
+  }
+
+  function abrirNuevaVenta(id: number) {
+    setIdCliente(String(id));
+    limpiarCamposVenta();
+    setOp('venta');
+    setFirma(''); setErrorOperacion(''); setFirmaFallida(''); setFase('');
+  }
+
+  function abrirCorregirImporte(id: number, venta: { sku: string; descripcion: string; monto: number }) {
+    setIdCliente(String(id));
+    setSku(venta.sku);
+    setDescripcion(venta.descripcion);
+    setMonto(String(venta.monto));
+    setOp('monto');
+    setFirma(''); setErrorOperacion(''); setFirmaFallida(''); setFase('');
+  }
+
+  function elegirOperacion(siguiente: Operacion) {
+    setOp(siguiente);
+    setFirma(''); setErrorOperacion(''); setFirmaFallida(''); setFase('');
+    if (siguiente === 'venta') limpiarCamposVenta();
   }
 
   async function ejecutar(evento: React.FormEvent) {
@@ -166,16 +195,17 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
                 <button type="button" className="button secondary" disabled={ocupado || coincidencias === 0} onClick={exportarCsv}>Exportar CSV</button>
               </div>
             </div>
-            {coincidencias === 0 ? <div className="empty-state compact" role="status"><span className="empty-symbol">◎</span><h4>{filtroActivo ? 'Ninguna venta coincide' : 'Sin ventas activas'}</h4><p>{filtroActivo ? `No hay ventas activas que coincidan con «${busqueda.trim()}». Prueba otro SKU o descripción.` : 'Los clientes cargados todavía no tienen ventas activas para filtrar o exportar.'}</p></div>
-              : clientesVisibles.map((cliente) => <article className="customer" key={cliente.direccion}>
-                <header><div><strong>{cliente.nombre}</strong><span className="small-note">Cliente #{cliente.idCliente} · {cliente.ventas.length} {filtroActivo ? 'coincidencias' : 'ventas activas'}</span></div><button className="text-button" disabled={ocupado} onClick={() => { setIdCliente(String(cliente.idCliente)); setOp('venta'); }}>Seleccionar</button></header>
-                <div className="table-wrap"><table><thead><tr><th>SKU</th><th>Descripción</th><th className="numeric">Importe</th></tr></thead><tbody>{cliente.ventas.map((venta) => <tr key={venta.direccion} onClick={() => { if (!ocupado) { setIdCliente(String(cliente.idCliente)); setSku(venta.sku); setMonto(String(venta.monto)); setOp('monto'); } }}><td><code>{venta.sku}</code></td><td>{venta.descripcion}</td><td className="numeric">{venta.monto.toLocaleString('es-MX')} <small>{UNIDAD_MONTO}</small></td></tr>)}</tbody></table></div>
+            {filtroActivo && coincidencias === 0 ? <div className="empty-state compact" role="status"><span className="empty-symbol">◎</span><h4>Ninguna venta coincide</h4><p>No hay ventas activas que coincidan con «{busqueda.trim()}». Prueba otro SKU o descripción.</p></div>
+              : (filtroActivo ? clientesVisibles : registro.clientes).map((cliente) => <article className="customer" key={cliente.direccion}>
+                <header><div><strong>{cliente.nombre}</strong><span className="small-note">Cliente #{cliente.idCliente} · {cliente.ventas.length} {filtroActivo ? 'coincidencias' : 'ventas activas'}</span></div><button type="button" className="text-button" disabled={ocupado} onClick={() => abrirNuevaVenta(cliente.idCliente)}>Nueva venta</button></header>
+                {cliente.ventas.length === 0 ? <p className="empty-line">Sin ventas activas. Puedes registrar la primera desde Operaciones.</p>
+                  : <div className="table-wrap"><table><thead><tr><th>SKU</th><th>Descripción</th><th className="numeric">Importe</th></tr></thead><tbody>{cliente.ventas.map((venta) => <tr key={venta.direccion} onClick={() => { if (!ocupado) abrirCorregirImporte(cliente.idCliente, venta); }}><td><code>{venta.sku}</code></td><td>{venta.descripcion}</td><td className="numeric">{venta.monto.toLocaleString('es-MX')} <small>{UNIDAD_MONTO}</small></td></tr>)}</tbody></table></div>}
               </article>)}
           </>}
         </>}
       </section>
       <section className="panel operations-panel"><div className="panel-heading"><h3>Operaciones</h3><span className="small-note">Con firma</span></div>
-        <div className="operation-tabs">{operaciones.map((item) => <button key={item.id} className={op === item.id ? 'active' : ''} disabled={ocupado} onClick={() => { setOp(item.id); setFirma(''); setErrorOperacion(''); setFirmaFallida(''); setFase(''); }}>{item.texto}</button>)}</div>
+        <div className="operation-tabs">{operaciones.map((item) => <button key={item.id} className={op === item.id ? 'active' : ''} disabled={ocupado} onClick={() => elegirOperacion(item.id)}>{item.texto}</button>)}</div>
         <form onSubmit={ejecutar}>
           <fieldset disabled={ocupado || !permiteEscribir}>
             {op === 'registro' && <p className="help">Crearás un registro para <strong>{negocio || 'tu negocio'}</strong> con la wallet conectada como autoridad.</p>}
@@ -196,6 +226,7 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
             </>}
             {(op === 'venta' || op === 'monto' || op === 'devolucion') && <div className="two-fields"><label>ID del cliente<input type="number" min="1" max="65535" step="1" value={idCliente} onChange={(e) => setIdCliente(e.target.value)} required /></label><label>SKU<input value={sku} onChange={(e) => setSku(e.target.value)} required /></label></div>}
             {op === 'venta' && <label>Descripción<input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required /></label>}
+            {op === 'monto' && descripcion && <p className="help">Venta de referencia: {descripcion}</p>}
             {(op === 'venta' || op === 'monto') && <label>{op === 'monto' ? 'Nuevo importe' : 'Importe'}<input type="number" min="1" max="4294967295" step="1" value={monto} onChange={(e) => setMonto(e.target.value)} required /><span className="help">Unidades enteras del ejercicio. No representa una transferencia de SOL.</span></label>}
             {op === 'devolucion' && <p className="notice subtle">Esta operación quita la venta del historial y cierra su cuenta. No realiza un reembolso comercial.</p>}
             <button className="button primary" type="submit" disabled={botonDeshabilitado}>{ocupado ? 'Operación en curso…' : (op === 'actualizar' ? 'Guardar' : operaciones.find((item) => item.id === op)!.texto)}</button>

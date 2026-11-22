@@ -9,11 +9,12 @@ function direccionDemo(relleno: number): Address {
 /**
  * Fixture local solo para demos visuales en desarrollo.
  * No llama al RPC, no habilita escrituras y no simula confirmaciones.
+ * Incluye cliente con ventas (CAF02) y otro sin ventas para probar el formulario.
  */
 export const DEMO_REGISTRO: RegistroUI = {
   direccion: direccionDemo(11),
-  nombreNegocio: 'Cafe Demo Local',
-  idCounter: 2,
+  nombreNegocio: 'Café Demo',
+  idCounter: 3,
   clientes: [
     {
       direccion: direccionDemo(21),
@@ -31,7 +32,7 @@ export const DEMO_REGISTRO: RegistroUI = {
       nombre: 'Luis',
       compras: 2,
       ventas: [
-        { direccion: direccionDemo(33), sku: 'CAF01', descripcion: 'Cafe latte', monto: 60 },
+        { direccion: direccionDemo(33), sku: 'CAF02', descripcion: 'Cafe latte', monto: 65 },
         {
           direccion: direccionDemo(34),
           sku: 'PROMO',
@@ -39,6 +40,13 @@ export const DEMO_REGISTRO: RegistroUI = {
           monto: 25,
         },
       ],
+    },
+    {
+      direccion: direccionDemo(23),
+      idCliente: 3,
+      nombre: 'Marta',
+      compras: 0,
+      ventas: [],
     },
   ],
 };
