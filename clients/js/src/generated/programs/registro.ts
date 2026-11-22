@@ -46,20 +46,24 @@ import {
   type VentaArgs,
 } from "../accounts";
 import {
+  getActualizarClienteInstructionAsync,
   getCambiarMontoInstructionAsync,
   getCrearClienteInstruction,
   getCrearRegistroInstructionAsync,
   getHacerDevolucionInstructionAsync,
   getRegistrarVentaInstructionAsync,
+  parseActualizarClienteInstruction,
   parseCambiarMontoInstruction,
   parseCrearClienteInstruction,
   parseCrearRegistroInstruction,
   parseHacerDevolucionInstruction,
   parseRegistrarVentaInstruction,
+  type ActualizarClienteAsyncInput,
   type CambiarMontoAsyncInput,
   type CrearClienteInput,
   type CrearRegistroAsyncInput,
   type HacerDevolucionAsyncInput,
+  type ParsedActualizarClienteInstruction,
   type ParsedCambiarMontoInstruction,
   type ParsedCrearClienteInstruction,
   type ParsedCrearRegistroInstruction,
@@ -170,6 +174,7 @@ export function identifyRegistroEvent(
 }
 
 export enum RegistroInstruction {
+  ActualizarCliente,
   CambiarMonto,
   CrearCliente,
   CrearRegistro,
@@ -181,6 +186,17 @@ export function identifyRegistroInstruction(
   instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array,
 ): RegistroInstruction {
   const data = "data" in instruction ? instruction.data : instruction;
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([203, 17, 140, 69, 200, 249, 196, 50]),
+      ),
+      0,
+    )
+  ) {
+    return RegistroInstruction.ActualizarCliente;
+  }
   if (
     containsBytes(
       data,
@@ -246,6 +262,9 @@ export type ParsedRegistroInstruction<
   TProgram extends string = "C2dJeFBUGCgjgWdzh28tJZ6dPTmXAiVfod3DBhPy7EUA",
 > =
   | ({
+      instructionType: RegistroInstruction.ActualizarCliente;
+    } & ParsedActualizarClienteInstruction<TProgram>)
+  | ({
       instructionType: RegistroInstruction.CambiarMonto;
     } & ParsedCambiarMontoInstruction<TProgram>)
   | ({
@@ -266,6 +285,13 @@ export function parseRegistroInstruction<TProgram extends string>(
 ): ParsedRegistroInstruction<TProgram> {
   const instructionType = identifyRegistroInstruction(instruction);
   switch (instructionType) {
+    case RegistroInstruction.ActualizarCliente: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: RegistroInstruction.ActualizarCliente,
+        ...parseActualizarClienteInstruction(instruction),
+      };
+    }
     case RegistroInstruction.CambiarMonto: {
       assertIsInstructionWithAccounts(instruction);
       return {
@@ -328,6 +354,11 @@ export type RegistroPluginAccounts = {
 };
 
 export type RegistroPluginInstructions = {
+  actualizarCliente: (
+    input: ActualizarClienteAsyncInput,
+    config?: { programAddress?: Address | HasAddress },
+  ) => ReturnType<typeof getActualizarClienteInstructionAsync> &
+    SelfPlanAndSendFunctions;
   cambiarMonto: (
     input: CambiarMontoAsyncInput,
     config?: { programAddress?: Address | HasAddress },
@@ -380,6 +411,14 @@ export function registroProgram(
           venta: addSelfFetchFunctions(client, getVentaCodec()),
         },
         instructions: {
+          actualizarCliente: (input, instructionConfig) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getActualizarClienteInstructionAsync(input, {
+                programAddress:
+                  instructionConfig?.programAddress ?? config.programAddress,
+              }),
+            ),
           cambiarMonto: (input, instructionConfig) =>
             addSelfPlanAndSendFunctions(
               client,

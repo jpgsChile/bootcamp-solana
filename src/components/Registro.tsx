@@ -6,14 +6,15 @@ import { NEGOCIO_INICIAL, UNIDAD_MONTO } from '../config/interfaz';
 import { leerRegistro, type RegistroUI } from '../solana/lecturas';
 import { negocioValido } from '../solana/validaciones';
 import { ErrorTransaccion, ErrorConfirmacionPendiente, enlaceTransaccion, traducir, type OpcionesEnvio } from '../solana/tx';
-import { crearRegistro, crearCliente, registrarVenta, cambiarMonto, hacerDevolucion } from '../solana/acciones';
+import { crearRegistro, crearCliente, actualizarCliente, registrarVenta, cambiarMonto, hacerDevolucion } from '../solana/acciones';
 import { DEMO_REGISTRO } from '../solana/demo-registro';
 import { contarVentasActivas, filtrarClientesPorVentas, filasVentasVisibles } from '../solana/ventas-filtro';
 import { construirCsvVentas, descargarCsv } from '../solana/ventas-csv';
 
-type Operacion = 'registro' | 'cliente' | 'venta' | 'monto' | 'devolucion';
+type Operacion = 'registro' | 'cliente' | 'actualizar' | 'venta' | 'monto' | 'devolucion';
 const operaciones: { id: Operacion; texto: string }[] = [
   { id: 'registro', texto: 'Crear registro' }, { id: 'cliente', texto: 'Crear cliente' },
+  { id: 'actualizar', texto: 'Actualizar cliente' },
   { id: 'venta', texto: 'Registrar venta' }, { id: 'monto', texto: 'Corregir importe' },
   { id: 'devolucion', texto: 'Devolución' },
 ];
@@ -53,8 +54,16 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
     secuencia.current += 1; setRegistro(null); setConsultado(false); setErrorLectura('');
     setLeyendo(false); setFirma(''); setFirmaFallida(''); setErrorOperacion(''); setAviso('');
     setDatosDemo(false); setBusqueda('');
+    // No conservar selección de cliente al cambiar negocio, autoridad o wallet.
+    setIdCliente(''); setNombre('');
   }, [negocio, autoridad]);
   useEffect(() => { onOcupado(ocupado); return () => onOcupado(false); }, [ocupado, onOcupado]);
+  useEffect(() => {
+    if (op !== 'actualizar') return;
+    const elegido = registro?.clientes.find((c) => String(c.idCliente) === idCliente);
+    if (elegido) setNombre(elegido.nombre);
+    else if (idCliente) { setIdCliente(''); setNombre(''); }
+  }, [op, registro]);
 
   const clientesVisibles = useMemo(
     () => (registro ? filtrarClientesPorVentas(registro.clientes, busqueda) : []),
@@ -67,6 +76,12 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
   const totalCargadas = registro ? contarVentasActivas(registro.clientes) : 0;
   const coincidencias = ventasVisibles.length;
   const filtroActivo = busqueda.trim().length > 0;
+  const clientesRegistro = registro?.clientes ?? [];
+  const clienteSeleccionado = clientesRegistro.find((c) => String(c.idCliente) === idCliente) ?? null;
+  const nombreNormalizado = nombre.trim();
+  const nombreSinCambio = !!clienteSeleccionado && nombreNormalizado === clienteSeleccionado.nombre.trim();
+  const nombreActualizarValido = nombreNormalizado.length > 0
+    && new TextEncoder().encode(nombreNormalizado).length <= 30;
 
   async function cargar(nombreNegocio = negocio, owner = autoridad) {
     const clave = nombreNegocio + '|' + owner;
@@ -107,6 +122,7 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
       switch (op) {
         case 'registro': resultado = await crearRegistro(wallet, connection, nombreNegocio, opciones); break;
         case 'cliente': resultado = await crearCliente(wallet, connection, nombreNegocio, nombre, opciones); break;
+        case 'actualizar': resultado = await actualizarCliente(wallet, connection, nombreNegocio, id, nombre, opciones); break;
         case 'venta': resultado = await registrarVenta(wallet, connection, nombreNegocio, id, sku, descripcion, importe, opciones); break;
         case 'monto': resultado = await cambiarMonto(wallet, connection, nombreNegocio, id, sku, importe, opciones); break;
         case 'devolucion': resultado = await hacerDevolucion(wallet, connection, nombreNegocio, id, sku, opciones); break;
@@ -122,6 +138,8 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
 
   const esOtraAutoridad = !!autoridad.trim() && autoridad.trim() !== walletDireccion;
   const permiteEscribir = !programa.esReferencia && !datosDemo && !!wallet.publicKey && !esOtraAutoridad;
+  const puedeGuardarActualizar = permiteEscribir && !!clienteSeleccionado && nombreActualizarValido && !nombreSinCambio;
+  const botonDeshabilitado = !negocio.trim() || (op === 'actualizar' && !puedeGuardarActualizar);
   return <>
     <div className="section-heading"><div><p className="eyebrow">NEGOCIO · CLIENTES · VENTAS</p><h2>Tu registro de ventas</h2></div><span className="tag">Cuentas independientes</span></div>
     {programa.esReferencia && <aside className="notice information"><strong>Configura tu programa para comenzar.</strong><p>La aplicación incluye un IDL de referencia. Importa el exportado de tu despliegue para consultar el negocio y realizar operaciones. Las lecturas de saldo ya están disponibles en Conexión.</p></aside>}
@@ -162,11 +180,25 @@ export function Registro({ onCambio, onOcupado }: { onCambio: () => void; onOcup
           <fieldset disabled={ocupado || !permiteEscribir}>
             {op === 'registro' && <p className="help">Crearás un registro para <strong>{negocio || 'tu negocio'}</strong> con la wallet conectada como autoridad.</p>}
             {op === 'cliente' && <label>Nombre del cliente<input value={nombre} onChange={(e) => setNombre(e.target.value)} required /></label>}
+            {op === 'actualizar' && <>
+              <label>Cliente<select value={idCliente} required onChange={(e) => {
+                const id = e.target.value; setIdCliente(id);
+                const elegido = clientesRegistro.find((c) => String(c.idCliente) === id);
+                setNombre(elegido?.nombre ?? '');
+              }}>
+                <option value="" disabled>Selecciona un cliente</option>
+                {clientesRegistro.map((c) => <option key={c.direccion} value={String(c.idCliente)}>#{c.idCliente} · {c.nombre}</option>)}
+              </select></label>
+              <label>Nuevo nombre<input value={nombre} onChange={(e) => setNombre(e.target.value)} required disabled={!clienteSeleccionado} /></label>
+              {!registro && <p className="help">Consulta el registro para listar todos los clientes, con o sin ventas.</p>}
+              {registro && clientesRegistro.length === 0 && <p className="help">Todavía no hay clientes en este registro.</p>}
+              {nombreSinCambio && <p className="help">El nombre normalizado es igual al actual; no hay cambios que guardar.</p>}
+            </>}
             {(op === 'venta' || op === 'monto' || op === 'devolucion') && <div className="two-fields"><label>ID del cliente<input type="number" min="1" max="65535" step="1" value={idCliente} onChange={(e) => setIdCliente(e.target.value)} required /></label><label>SKU<input value={sku} onChange={(e) => setSku(e.target.value)} required /></label></div>}
             {op === 'venta' && <label>Descripción<input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required /></label>}
             {(op === 'venta' || op === 'monto') && <label>{op === 'monto' ? 'Nuevo importe' : 'Importe'}<input type="number" min="1" max="4294967295" step="1" value={monto} onChange={(e) => setMonto(e.target.value)} required /><span className="help">Unidades enteras del ejercicio. No representa una transferencia de SOL.</span></label>}
             {op === 'devolucion' && <p className="notice subtle">Esta operación quita la venta del historial y cierra su cuenta. No realiza un reembolso comercial.</p>}
-            <button className="button primary" type="submit" disabled={!negocio.trim()}>{ocupado ? 'Operación en curso…' : operaciones.find((item) => item.id === op)!.texto}</button>
+            <button className="button primary" type="submit" disabled={botonDeshabilitado}>{ocupado ? 'Operación en curso…' : (op === 'actualizar' ? 'Guardar' : operaciones.find((item) => item.id === op)!.texto)}</button>
           </fieldset>
         </form>
         {!wallet.publicKey && <p className="help">Conecta tu wallet de práctica para realizar operaciones.</p>}

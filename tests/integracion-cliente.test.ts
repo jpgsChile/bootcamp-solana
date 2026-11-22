@@ -99,6 +99,11 @@ test('se valida el contrato IDL y la normalizacion no cambia el orden ni tipos',
   assert.equal(ix.args[0].name, '_id_cliente');
   const invalida = structuredClone(copia); invalida.instructions = [];
   assert.throws(() => validarIdl(invalida), /Falta la instruccion/);
+  const sinActualizar = structuredClone(copia);
+  sinActualizar.instructions = sinActualizar.instructions.filter(
+    (item) => item.name.toLowerCase().replace(/_/g, '') !== 'actualizarcliente',
+  );
+  assert.throws(() => validarIdl(sinActualizar), /Falta la instruccion actualizarcliente/i);
   const otroTipo = structuredClone(copia);
   otroTipo.instructions[0].args[0].type = 'u64';
   assert.throws(() => validarIdl(otroTipo), /tipos de los argumentos/);

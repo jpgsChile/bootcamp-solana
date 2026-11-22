@@ -9,11 +9,14 @@ const requeridas = {
   registrarventa: ['idcliente', 'sku', 'descripcion', 'monto'],
   cambiarmonto: ['idcliente', 'sku', 'nuevomonto'],
   hacerdevolucion: ['idcliente', 'sku'],
+  // El validador ya admite instrucciones extra; esta queda como requisito del cliente nuevo.
+  actualizarcliente: ['idcliente', 'nuevonombre'],
 };
 const tiposArgumentos = {
   crearregistro: ['string'], crearcliente: ['string'],
   registrarventa: ['u16', 'string', 'string', 'u32'],
   cambiarmonto: ['u16', 'string', 'u32'], hacerdevolucion: ['u16', 'string'],
+  actualizarcliente: ['u16', 'string'],
 };
 const camposEsperados = {
   registro: [['owner', 'pubkey'], ['nombrenegocio', 'string'], ['clientes', 'vec:pubkey'], ['idcounter', 'u16']],
